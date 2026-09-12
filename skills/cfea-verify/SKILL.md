@@ -67,9 +67,14 @@ to send back to `cfea-contract`, not something to resolve by looking inside.
 
 Tear down all ephemeral infra regardless of outcome. Emit an execution
 receipt — what was run, what passed/failed per scenario, the mutation score
-carried over from `cfea-mutate`, and the NFR check results. This receipt is
-the human-facing deliverable; present it plainly rather than just reporting
-"done."
+carried over from `cfea-mutate`, and the NFR check results. Pull
+`green_attempts`, `failure_log`, and `mutation_rounds` out of
+`.cfea/state.json` into the receipt too: a feature that took 5 tries to go
+Green and 4 rounds to kill mutants passed the same gates as one that took 1
+and 1, but it's a weaker trust signal and a human skimming receipts should be
+able to see that difference at a glance, not just a pass/fail. This receipt
+is the human-facing deliverable; present it plainly rather than just
+reporting "done."
 
 ## Step 7 — on failure, route back, don't patch here
 

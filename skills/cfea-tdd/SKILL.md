@@ -55,9 +55,19 @@ license to edit it — stop, exit Green, and report which test and why. Silently
 loosening a test to make it pass is the exact failure mode this whole
 architecture exists to prevent.
 
+Before each retry, classify why the last attempt failed — **typo/syntax**,
+**logic** (implementation doesn't match the contract), or **environment**
+(harness/dependency/config issue) — and let that classification pick the fix:
+don't rewrite logic to chase a typo, don't retry blindly without knowing which
+kind of failure you're looking at. Append each attempt's classification to
+`.cfea/state.json` as it happens, e.g. `"failure_log": [{"attempt": 1, "type":
+"logic"}]` — this is a debugging trail for this one run, not a store to query
+later, so a field on the existing file is enough.
+
 Cap Green at **5 implementation attempts** against an unchanged test set. If
-still red after 5, stop and report which tests are failing and what's been
-tried — don't keep burning cycles on something the agent can't figure out.
+still red after 5, stop and report which tests are failing, the failure_log,
+and what's been tried — don't keep burning cycles on something the agent
+can't figure out.
 
 ## Step 4 — verify the loop was legitimate
 
@@ -69,7 +79,11 @@ not proceed.
 ## Step 5 — hand off
 
 Green on an unchanged test set is necessary but not sufficient — it only
-proves the tests as written pass, not that the tests are any good. Update
-`.cfea/state.json` to `"phase": "mutate"` (or delete it) so the lock lifts —
-`cfea-mutate` needs to edit `tests/` next. Hand off to `cfea-mutate`; do not
-report this feature as done on Green alone.
+proves the tests as written pass, not that the tests are any good. Before
+handing off, record `"green_attempts": N` (how many tries it took, 1–5) in
+`.cfea/state.json` alongside the `failure_log` from Step 3 — a feature that
+went Green on attempt 4 is a weaker trust signal than one that went Green on
+attempt 1, even though both are technically passing. Then update `"phase":
+"mutate"` (keep the file, don't delete it — `cfea-mutate` and later
+`cfea-verify` both read these fields) so the lock lifts. Hand off to
+`cfea-mutate`; do not report this feature as done on Green alone.

@@ -69,4 +69,8 @@ human, not something to brute-force indefinitely.
 ## Step 6 — hand off
 
 Once the mutation score is 100% (killed or explicitly documented equivalent),
-hand off to `cfea-verify`. No human pause needed unless Step 5's cap was hit.
+record `"mutation_rounds": N` (how many rounds it took, 1–5) in
+`.cfea/state.json` next to the `green_attempts`/`failure_log` fields
+`cfea-tdd` already left there — `cfea-verify` rolls all of it into the final
+receipt as trust signals, not just a binary pass. Hand off to `cfea-verify`.
+No human pause needed unless Step 5's cap was hit.
