@@ -9,6 +9,15 @@ Green proves the tests pass. It doesn't prove they'd fail if the code were
 wrong. Mutation testing is the actual proof: inject small faults, confirm the
 tests catch them. This is what lets a human trust tests they never read.
 
+Checklist:
+1. Confirm Green + read the pinned mutation config (Step 0)
+2. Scope to changed files, run full regression suite unmutated (Step 1)
+3. Run the mutation tool (Step 2)
+4. Triage each survivor: strengthen a test, or document as equivalent (Step 3)
+5. Re-run suite + mutation tool after each round (Step 4)
+6. Stop at 5 rounds if still unresolved (Step 5)
+7. Record mutation_rounds and hand off to cfea-verify (Step 6)
+
 ## Step 0 — check the input is ready
 
 Only run after `cfea-tdd` reports Green on an unchanged test set. Unlike that
@@ -48,6 +57,15 @@ possible, so no test could ever kill it) if you can state concretely why —
 and log that reasoning inline next to the mutant in your run summary. This is
 a judgment call happening without a human in the loop, so the reasoning has to
 be auditable after the fact, not just asserted.
+
+- **Correctly equivalent:** a mutant changes `i++` to `i += 1` in a loop
+  counter. No input produces a different output between the two — mark it
+  equivalent and move on.
+- **Not equivalent, don't mark it that way:** a mutant flips a boundary check
+  from `>` to `>=`. That changes behavior at exactly one input value even if
+  no current test happens to probe that value — it's a real gap, not an
+  equivalent mutant. Add the assertion that exercises the boundary instead of
+  writing it off.
 
 Never resolve a survivor by weakening what a test checks, deleting a case, or
 changing `src/` purely to dodge the mutant rather than to fix a real gap. The

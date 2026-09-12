@@ -11,6 +11,16 @@ actual running system gets held against the contract, for real, in a clean
 environment. The output of this skill is the thing a human reads instead of
 `src/`.
 
+Checklist:
+1. Confirm clean mutation score + read the pinned verify config (Step 0)
+2. Spin up ephemeral infra (Step 1)
+3. Boot the app, wait for readiness (Step 2)
+4. Replay every contract scenario as a real call (Step 3)
+5. Check declared NFRs (Step 4)
+6. Assert boundary-only — no internal log/behavior inspection (Step 5)
+7. Tear down, emit the receipt (Step 6)
+8. On any failure, route back to cfea-tdd rather than patching here (Step 7)
+
 ## Step 0 — check the input is ready
 
 Only run after `cfea-mutate` reports a clean mutation score (100% killed or

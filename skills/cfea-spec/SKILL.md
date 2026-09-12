@@ -34,6 +34,14 @@ a Socratic follow-up (a concrete "what should happen if..." or "how would you
 tell it apart from a version that just returns X?") until the criterion is
 falsifiable — a specific input paired with a specific, checkable outcome.
 
+- **Vacuous, keep drilling:** "handles insufficient funds gracefully." A
+  wrong implementation (e.g. one that silently succeeds and overdraws the
+  account) could still claim to satisfy this — it names no observable
+  outcome.
+- **Falsifiable, stop drilling:** "returns 402 with `{error:
+  "insufficient_funds"}` when balance < amount." A specific input, a specific
+  checkable outcome — a wrong implementation can't accidentally pass this.
+
 Cap this at **5 drill-down rounds per scenario**. If it's still vague after 5,
 stop drilling, write the scenario with what you have, and flag it explicitly
 in your summary back to the user as unresolved/needs-their-input — don't loop
